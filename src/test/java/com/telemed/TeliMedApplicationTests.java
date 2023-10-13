@@ -1,4 +1,4 @@
-package com.spring.boot.telimed;
+package com.telemed;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

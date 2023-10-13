@@ -15,7 +15,8 @@ public class PatientCreation {
 							+ "email VARCHAR(255) NOT NULL, "
 							+ "phone_no VARCHAR(255), "
 							+ "city VARCHAR(255) NOT NULL, "
-							+ "dob Date, "
+							+ "dob Date,"
+							+ "password VARCHAR(255) NOT NULL "
 							+ "PRIMARY KEY(id) )";
 
 	private String alterQuery=" ALTER TABLE patient AUTO_INCREMENT=1000 ";

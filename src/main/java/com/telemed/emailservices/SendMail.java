@@ -24,7 +24,8 @@ public class SendMail {
 		Random random=new Random();
 		otp=random.nextInt(min,max);  // this will generate otp between min and max
 
-		// Email sending mechanism
+		System.out.println("Sending mail");
+//		Email sending mechanism
 		String otpText="Your OTP is "+otp;
 		SimpleMailMessage mailMessage=new SimpleMailMessage();
 //		mailMessage.setTo("krishnabhawsar8@gmail.com");
