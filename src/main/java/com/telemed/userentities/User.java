@@ -11,10 +11,19 @@ public abstract class User {
 	public String email;
 	public String phoneNo;
 	public String city;
+	public String password;
 	
 	// One User (Doctor/Patient) has many appointments
 	List<Appointment> appointments=new ArrayList<>();  
-	
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", email=" + email + ", phoneNo=" + phoneNo + ", city=" + city

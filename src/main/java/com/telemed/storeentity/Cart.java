@@ -12,8 +12,23 @@ public class Cart {
 	private int totalNoOfItems;
 	private float totalCost;
 	
-	List<Product> products=new ArrayList<>();
+	List<Product> products;
 	
+	public Cart() {
+		super();
+		products=new ArrayList<>();
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Cart(int id, int patientId, int totalNoOfItems, float totalCost, Product product) {
+		super();
+		this.id = id;
+		this.patientId = patientId;
+		this.totalNoOfItems = totalNoOfItems;
+		this.totalCost = totalCost;
+		this.products.add(product);
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -54,19 +69,6 @@ public class Cart {
 		this.products = products;
 	}
 
-	public Cart() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	public Cart(int id, int patientId, int totalNoOfItems, float totalCost, Product product) {
-		super();
-		this.id = id;
-		this.patientId = patientId;
-		this.totalNoOfItems = totalNoOfItems;
-		this.totalCost = totalCost;
-		this.products.add(product);
-	}
 	
 	
 }
