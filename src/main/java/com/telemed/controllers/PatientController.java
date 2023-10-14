@@ -1,10 +1,12 @@
 package com.telemed.controllers;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +20,7 @@ import com.telemed.userentities.Patient;
 
 @RestController
 @RequestMapping("/patient")
+@CrossOrigin
 public class PatientController {
 	
 	@Autowired
@@ -26,15 +29,25 @@ public class PatientController {
 	@Autowired
 	private SendMailService mailService;
 	
+	
+	
+	// sign-up of patient
 	@PostMapping ("/register")
-	public ResponseEntity<Patient> register(@RequestBody Patient patient) {
-		 patientDao.store(patient);
+	public ResponseEntity<String> register(@RequestBody Patient patient) {
+		
 		 System.out.println(patient);
+		 patientDao.store(patient);
 		 
 		 System.out.println("Sending email to "+patient.getEmail());
-		 System.out.println(mailService.sendOtp(patient.getEmail()));
-		 
-		 return new ResponseEntity<>(patient,HttpStatus.OK);
+		 String otp=mailService.sendOtp(patient.getEmail());
+		 System.out.println(otp);
+		 return new ResponseEntity<>(otp,HttpStatus.OK);
+	}
+	
+	@GetMapping("/getall")
+	public ResponseEntity<List<Patient>> getAll() {
+		List<Patient> patients=patientDao.extractAll();
+		return new ResponseEntity<List<Patient>>(patients,HttpStatus.OK);
 	}
 	
 	@GetMapping("/getbyid/{id}")

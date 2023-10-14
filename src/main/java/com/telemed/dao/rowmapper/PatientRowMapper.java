@@ -15,9 +15,12 @@ public class PatientRowMapper implements RowMapper<Patient> {
 	public Patient mapRow(ResultSet rs, int rowNum) throws SQLException {
 		Patient patient=new Patient();
 		
+		patient.setId(rs.getInt("id"));
 		patient.setName(rs.getString("name"));
 		patient.setEmail(rs.getString("email"));
 		patient.setPassword(rs.getString("phone_no"));
+		patient.setPhoneNo(rs.getString("phone_no"));
+		patient.setDob(rs.getDate("dob"));
 		patient.setCity(rs.getString("city"));
 		patient.setPassword(rs.getString("password"));
 		

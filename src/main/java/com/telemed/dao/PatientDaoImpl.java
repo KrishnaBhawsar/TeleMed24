@@ -24,20 +24,29 @@ public class PatientDaoImpl implements PatientDao {
 	public int store(Patient patient) {
 		
 		String storePatientQuery="INSERT INTO patient "
-				+ "(name,email,phone_no,city,password)"
-				+ "VALUES (?,?,?,?,?,?,?,?)";
+				+ "(name,email,phone_no,dob,city,password)"
+				+ "VALUES (?,?,?,?,?,?)";
 		
 		int rowsAffected=jdbcTemplate.update(storePatientQuery,
 										patient.getName(),
 										patient.getEmail(),
 										patient.getPhoneNo(),
+										patient.getDob(),
 										patient.getCity(),
 										patient.getPassword()
 										);
-		
+		System.out.println(rowsAffected);
 		return rowsAffected;
 	}
 	
+	
+	// Method to extract all patients
+	public List<Patient> extractAll() {
+		String extractAllPatientsQuery="SELECT * FROM patient";
+		
+		List<Patient> patients=jdbcTemplate.query(extractAllPatientsQuery,patientRowMapper);
+		return patients;
+	}
 	
 	// Method to extract whole Patient Object from DB  
 	public Optional<Patient> extract(int primaryKey) {

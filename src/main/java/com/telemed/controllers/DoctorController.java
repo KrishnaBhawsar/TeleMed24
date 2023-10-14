@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,14 +37,14 @@ public class DoctorController {
 	
 	
 	
-	
-//	public ResponseEntity<Doctor> register(@ModelAttribute Doctor doctor) {
-//		
-//		System.out.println(doctor);
-//		
-//		doctorDaoImpl.store(doctor);
-//		return new ResponseEntity<>(doctor,HttpStatus.OK);
-//	}
+	@PostMapping("/register")
+	public ResponseEntity<Doctor> register(@RequestBody Doctor doctor) {
+		
+		System.out.println(doctor);
+		
+		doctorDao.store(doctor);
+		return new ResponseEntity<>(doctor,HttpStatus.OK);
+	}
 	
 	
 	@GetMapping("/getbyid/{id}")
