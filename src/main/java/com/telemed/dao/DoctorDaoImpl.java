@@ -17,6 +17,7 @@ public class DoctorDaoImpl implements DoctorDao{
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 	
+	private DoctorRowMapper doctorRowMapper=DoctorRowMapper.getRowMapper();
 	
 	// Method to store doctor into DB
 	public int store(Doctor doctor) {
@@ -44,7 +45,7 @@ public class DoctorDaoImpl implements DoctorDao{
 		
 		String extractDoctorQuery="SELECT * FROM doctor WHERE id=?";
 		
-		Doctor doctor=jdbcTemplate.queryForObject(extractDoctorQuery, new DoctorRowMapper(), primaryKey);
+		Doctor doctor=jdbcTemplate.queryForObject(extractDoctorQuery, doctorRowMapper, primaryKey);
 		Optional<Doctor> optionalDoctor=Optional.of(doctor);
 		
 		return optionalDoctor;
@@ -57,7 +58,7 @@ public class DoctorDaoImpl implements DoctorDao{
 		
 		String extractDoctorQueryByName="SELECT * FROM doctor WHERE name=?";
 		
-		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryByName, new DoctorRowMapper(), name);
+		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryByName, doctorRowMapper, name);
 		return doctorList;
 	}
 	
@@ -68,7 +69,7 @@ public class DoctorDaoImpl implements DoctorDao{
 		
 		String extractDoctorQueryByName="SELECT * FROM doctor WHERE name=?";
 		
-		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryByName, new DoctorRowMapper(), city);
+		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryByName, doctorRowMapper, city);
 		return doctorList;
 	}
 	
@@ -79,7 +80,7 @@ public class DoctorDaoImpl implements DoctorDao{
 			
 		String extractDoctorQueryBySpecialization="SELECT * FROM doctor WHERE name=?";
 		
-		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryBySpecialization, new DoctorRowMapper(), specialization);
+		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryBySpecialization, doctorRowMapper, specialization);
 		return doctorList;
 	}
 	

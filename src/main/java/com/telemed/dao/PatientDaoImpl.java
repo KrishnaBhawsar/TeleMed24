@@ -1,10 +1,15 @@
 package com.telemed.dao;
 
 import java.sql.Date;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import com.telemed.dao.rowmapper.PatientRowMapper;
+import com.telemed.userentities.Patient;
 
 
 @Repository
@@ -12,7 +17,69 @@ public class PatientDaoImpl implements PatientDao {
 	
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	
+	private PatientRowMapper patientRowMapper=PatientRowMapper.getRowMapper();
+	
+	// Method to store patient into DB
+	public int store(Patient patient) {
+		
+		String storePatientQuery="INSERT INTO patient "
+				+ "(name,email,phone_no,city,password)"
+				+ "VALUES (?,?,?,?,?,?,?,?)";
+		
+		int rowsAffected=jdbcTemplate.update(storePatientQuery,
+										patient.getName(),
+										patient.getEmail(),
+										patient.getPhoneNo(),
+										patient.getCity(),
+										patient.getPassword()
+										);
+		
+		return rowsAffected;
+	}
+	
+	
+	// Method to extract whole Patient Object from DB  
+	public Optional<Patient> extract(int primaryKey) {
+		
+		String extractPatientQuery="SELECT * FROM patient WHERE id=?";
+		
+		Patient patient=jdbcTemplate.queryForObject(extractPatientQuery, patientRowMapper, primaryKey);
+		Optional<Patient> optionalPatient=Optional.of(patient);
+		
+		return optionalPatient;
+	}
+	
+	
+	
+	// Method to extract whole patient by name Object from DB  
+	public List<Patient> extractByName(String name) {
+		
+		String storePatientQuery="SELECT * FROM patient WHERE name=?";
+		
+		List<Patient> patientList=jdbcTemplate.query(storePatientQuery, patientRowMapper, name);
+		return patientList;
+	}
+	
+	
+	
+	// Method to extract whole Doctor by city Object from DB  
+	public List<Patient> extractByCity(String city) {
+		
+		String extractPatientQueryByName="SELECT * FROM patient WHERE name=?";
+		
+		List<Patient> doctorList=jdbcTemplate.query(extractPatientQueryByName,patientRowMapper, city);
+		return doctorList;
+	}
+	
 
+	
+	
+	
+	
+	
+	
+	
 	@Override
 	public String extractName(int primaryKey) {
 		String name=null;

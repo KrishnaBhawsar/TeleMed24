@@ -7,7 +7,11 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.telemed.userentities.Doctor;
 
+
+// We will make it singleton class
 public class DoctorRowMapper implements RowMapper<Doctor>{
+	
+	private static DoctorRowMapper doctorRowMapper;
 	
 	@Override
 	public Doctor mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -18,11 +22,23 @@ public class DoctorRowMapper implements RowMapper<Doctor>{
 		doctor.setEmail(rs.getString("email"));
 		doctor.setPhoneNo(rs.getString("phone_no"));
 		doctor.setCity(rs.getString("city"));
-		doctor.setCertificateNo(rs.getString("ccertificate_no"));
+		doctor.setCertificateNo(rs.getString("certificate_no"));
 		doctor.setRating(rs.getInt("rating"));
 		doctor.setSpecialization(rs.getString("specialization"));
 		doctor.setPassword(rs.getString("password"));
 		
 		return doctor;
+	}
+	
+	// this constructor make it singleton
+	private DoctorRowMapper() {
+		super();
+	}
+
+	public static DoctorRowMapper getRowMapper() {
+		if(doctorRowMapper==null) {
+			doctorRowMapper=new DoctorRowMapper();
+		}
+		return doctorRowMapper;
 	}
 }
