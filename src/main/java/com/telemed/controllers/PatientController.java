@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.telemed.dao.PatientDaoImpl;
-import com.telemed.emailservices.SendMailService;
+import com.telemed.emailservices.EmailServiceImpl;
 import com.telemed.userentities.Patient;
 
 @RestController
@@ -27,7 +27,7 @@ public class PatientController {
 	private PatientDaoImpl patientDao;
 	
 	@Autowired
-	private SendMailService mailService;
+	private EmailServiceImpl mailService;
 	
 	
 	
@@ -39,7 +39,7 @@ public class PatientController {
 		 patientDao.store(patient);
 		 
 		 System.out.println("Sending email to "+patient.getEmail());
-		 String otp=mailService.sendOtp(patient.getEmail());
+		 String otp=mailService.sendOpt(patient.getEmail());
 		 System.out.println(otp);
 		 return new ResponseEntity<>(otp,HttpStatus.OK);
 	}
