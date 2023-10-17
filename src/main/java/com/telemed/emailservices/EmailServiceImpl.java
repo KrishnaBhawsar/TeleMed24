@@ -14,7 +14,7 @@ public class EmailServiceImpl implements EmailService {
 	private JavaMailSender mailSender;
 	
 	@Override
-	public String sendOpt(String to) {
+	public String sendOtp(String to) {
 		
 		// OTP generation code
 		int otp=1;
@@ -27,6 +27,8 @@ public class EmailServiceImpl implements EmailService {
 		message.setTo(to);
 		message.setSubject("TeleMed24 sign-up OTP");
 		message.setText("Your OTP is "+otp);
+		
+		// Sending mail message
 		mailSender.send(message);
 		
 		System.out.println(otp);
