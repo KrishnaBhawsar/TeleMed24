@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.telemed.dao.PatientDaoImpl;
@@ -32,9 +34,10 @@ public class PatientController {
 	
 	
 	// OTP request
-	@GetMapping("/reqOTP/{to}")
-	public ResponseEntity<String> requestOtp(@PathVariable("to") String to)
+	@PostMapping("/reqOTP")
+	public ResponseEntity<String> requestOtp(@RequestParam String to)
 	{
+		System.out.println("Sending otp");
 		String otp=mailService.sendOtp(to);
 		System.out.println("Sending otp to "+to);
 		System.out.println("otp is "+otp);
@@ -43,36 +46,18 @@ public class PatientController {
 	}
 	
 	
-	
+	// sign-up of patient
 	@PostMapping ("/register")
-	public ResponseEntity<String> register() {
+	public ResponseEntity<Patient> register(@RequestBody Patient patient) {
 		
 		// One exception may be patient already present with given email
-//		 System.out.println(patient);
-//		 System.out.println("Storing patient into db");
-//		 patientDao.store(patient);
+		 System.out.println(patient);
+		 System.out.println("Storing patient into db");
+		 patientDao.store(patient);
 		 
 		 ResponseCookie cookie=ResponseCookie.from("user-name","xyz").build();
-		 return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString()).body("hello"); 
+		 return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString()).body(patient); 
 	}
-	
-	
-	
-	
-	
-	
-	// sign-up of patient
-//	@PostMapping ("/register")
-//	public ResponseEntity<Patient> register(@RequestBody Patient patient) {
-//		
-//		// One exception may be patient already present with given email
-//		 System.out.println(patient);
-//		 System.out.println("Storing patient into db");
-//		 patientDao.store(patient);
-//		 
-//		 ResponseCookie cookie=ResponseCookie.from("user-name","xyz").build();
-//		 return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString()).body(patient); 
-//	}
 	
 	@GetMapping("/getall")
 	public ResponseEntity<List<Patient>> getAll() {
