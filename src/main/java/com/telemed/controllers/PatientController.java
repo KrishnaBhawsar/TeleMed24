@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.telemed.dao.PatientDaoImpl;
@@ -34,12 +35,12 @@ public class PatientController {
 	
 	// OTP request
 	@PostMapping("/reqOTP")
-	public ResponseEntity<String> requestOtp(@RequestBody Patient patient)
+	public ResponseEntity<String> requestOtp(@RequestParam String to)
 	{
 		System.out.println("Sending otp");
-		String otp=mailService.sendOtp(patient.getEmail());
-		System.out.println("Sending otp to "+patient.getEmail());
-		System.out.println("otp is "+otp);
+		String otp=mailService.sendOtp(to);
+		System.out.println("Sending otp to "+to);
+		System.out.println("otp is "+otp);  // working 
 		
 		return new ResponseEntity<String>(otp,HttpStatus.OK);
 	}
