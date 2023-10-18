@@ -34,7 +34,7 @@ public class PatientController {
 	
 	
 	// OTP request
-	@PostMapping("/reqOTP")
+	@GetMapping("/reqOTP")
 	public ResponseEntity<String> requestOtp(@RequestParam String to)
 	{
 		System.out.println("Sending otp");
