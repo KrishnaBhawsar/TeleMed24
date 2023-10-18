@@ -64,7 +64,7 @@ public class DoctorController {
 		
 		System.out.println(name);
 		List<Doctor> doctors=doctorDao.extractByName(name);
-		 
+		  
 		if(doctors.isEmpty()) {
 			return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
 		} 
