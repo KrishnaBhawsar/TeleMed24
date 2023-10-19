@@ -30,8 +30,6 @@ public class EmailServiceImpl implements EmailService {
 		
 		// Sending mail message
 		mailSender.send(message);
-		
-		System.out.println(otp);
 		return otp+"";
 	}
 

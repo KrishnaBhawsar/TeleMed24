@@ -82,6 +82,12 @@ public class PatientDaoImpl implements PatientDao {
 	}
 	
 
+	public Patient extract(String email) {
+		String extractPatientEmailQuery="SELECT * FROM patient WHERE email=?";
+		
+		Patient patient=jdbcTemplate.queryForObject(extractPatientEmailQuery, patientRowMapper, email);
+		return patient;
+	}
 	
 	
 	

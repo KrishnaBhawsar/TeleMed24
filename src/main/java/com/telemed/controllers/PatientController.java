@@ -1,6 +1,7 @@
 package com.telemed.controllers;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +15,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.telemed.dao.PatientDaoImpl;
 import com.telemed.emailservices.EmailServiceImpl;
 import com.telemed.userentities.Patient;
+
+import jakarta.servlet.http.Cookie;
 
 @RestController
 @CrossOrigin
@@ -34,13 +36,13 @@ public class PatientController {
 	
 	
 	// OTP request
-	@GetMapping("/reqOTP")
-	public ResponseEntity<String> requestOtp(@RequestParam String to)
+	@PostMapping("/reqOTP")
+	public ResponseEntity<String> requestOtp(@RequestBody Map<String,String> requestBody)
 	{
-		System.out.println("Sending otp");
-		String otp=mailService.sendOtp(to);
+		String to=requestBody.get("email");
 		System.out.println("Sending otp to "+to);
-		System.out.println("otp is "+otp);  // working 
+		String otp=mailService.sendOtp(to);
+		System.out.println("otp = "+otp);  // working 
 		
 		return new ResponseEntity<String>(otp,HttpStatus.OK);
 	}
@@ -55,9 +57,33 @@ public class PatientController {
 		 System.out.println("Storing patient into db");
 		 patientDao.store(patient);
 		 
-		 ResponseCookie cookie=ResponseCookie.from("user-name","xyz").build();
+		 ResponseCookie cookie=ResponseCookie.from("login-status","true").build();
 		 return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString()).body(patient); 
 	}
+	
+	@PostMapping("/login")
+	public ResponseEntity<String> login(@RequestBody Map<String,String> requestBody) {
+		System.out.println("Trying to login");
+		System.out.println("login detail : email = "+requestBody.get("email")+"\n               password = "+requestBody.get("password"));
+		
+		Patient patient=patientDao.extract(requestBody.get("email"));
+		
+		if(patient==null) {
+			System.out.println("Patient not exist with email-id "+requestBody.get("email"));
+			return new ResponseEntity<>("Patient not found with email",
+										HttpStatus.NOT_FOUND);
+		} else if(!requestBody.get("password").equals(patient.getPassword())) {
+			System.out.println("Incorrect password");
+			return new ResponseEntity<>("Incorrect password",	
+										HttpStatus.OK);
+		}
+		
+		Cookie cookie=new Cookie("patient-id",patient.getId()+"");
+		HttpHeaders headers=new HttpHeaders();
+		headers.add("Cookie", cookie.toString());
+		return new ResponseEntity<> ("login successfull",headers,HttpStatus.OK);
+	}
+	
 	
 	@GetMapping("/getall")
 	public ResponseEntity<List<Patient>> getAll() {
