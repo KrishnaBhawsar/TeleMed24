@@ -5,9 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +19,8 @@ import com.telemed.dao.PatientDaoImpl;
 import com.telemed.emailservices.EmailServiceImpl;
 import com.telemed.userentities.Patient;
 
-import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @CrossOrigin
@@ -50,21 +49,32 @@ public class PatientController {
 	
 	// sign-up of patient
 	@PostMapping ("/register")
-	public ResponseEntity<Patient> register(@RequestBody Patient patient) {
+	public ResponseEntity<Patient> register(@RequestBody Patient patient,HttpSession session) {
+		System.out.println("Storing patient into db");
+		System.out.println(patient);
 		
-		// One exception may be patient already present with given email
-		 System.out.println(patient);
-		 System.out.println("Storing patient into db");
+//		 One exception may be patient already present with given email
 		 patientDao.store(patient);
 		 
-		 ResponseCookie cookie=ResponseCookie.from("login-status","true").build();
-		 return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString()).body(patient); 
+		 return new ResponseEntity<>(patient,HttpStatus.OK);
+		  
 	}
 	
+	// Patient login
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody Map<String,String> requestBody) {
+	public ResponseEntity<String> login(@RequestBody Map<String,String> requestBody,
+										HttpServletRequest request) {
+		
+		HttpSession session=request.getSession();
+		if(session.isNew()) {
+			System.out.println("New Session");
+		} else {
+			System.out.println("User session already existed");
+		}
+		
 		System.out.println("Trying to login");
-		System.out.println("login detail : email = "+requestBody.get("email")+"\n               password = "+requestBody.get("password"));
+		System.out.println("login detail : email = "+requestBody.get("email")+
+							"\n               password = "+requestBody.get("password")+"\n");
 		
 		Patient patient=patientDao.extract(requestBody.get("email"));
 		
@@ -77,11 +87,9 @@ public class PatientController {
 			return new ResponseEntity<>("Incorrect password",	
 										HttpStatus.OK);
 		}
-		
-		Cookie cookie=new Cookie("patient-id",patient.getId()+"");
-		HttpHeaders headers=new HttpHeaders();
-		headers.add("Cookie", cookie.toString());
-		return new ResponseEntity<> ("login successfull",headers,HttpStatus.OK);
+
+		session.setAttribute("USER_EMAIL",patient.getEmail());
+		return new ResponseEntity<>("login successful",HttpStatus.OK);
 	}
 	
 	

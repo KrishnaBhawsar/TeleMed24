@@ -9,6 +9,22 @@ public class Doctor extends User{
 	private String certificateNo;
 	private int rating;
 	private String specialization;
+	private String address;
+	
+	
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getModeOfConsultation() {
+		return modeOfConsultation;
+	}
+	public void setModeOfConsultation(String modeOfConsultation) {
+		this.modeOfConsultation = modeOfConsultation;
+	}
+	private String modeOfConsultation;
 	
 	public String getCertificateNo() {
 		return certificateNo;

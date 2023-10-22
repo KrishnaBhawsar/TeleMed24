@@ -22,6 +22,8 @@ public class DoctorRowMapper implements RowMapper<Doctor>{
 		doctor.setEmail(rs.getString("email"));
 		doctor.setPhoneNo(rs.getString("phone_no"));
 		doctor.setCity(rs.getString("city"));
+		doctor.setAddress(rs.getString("address"));
+		doctor.setModeOfConsultation(rs.getString("mode_of_consultation"));
 		doctor.setCertificateNo(rs.getString("certificate_no"));
 		doctor.setRating(rs.getInt("rating"));
 		doctor.setSpecialization(rs.getString("specialization"));

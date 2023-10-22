@@ -1,11 +1,13 @@
 package com.telemed.controllers;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,37 +16,87 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.telemed.dao.DoctorDaoImpl;
+import com.telemed.emailservices.EmailServiceImpl;
 import com.telemed.userentities.Doctor;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 @RestController
+@CrossOrigin
 @RequestMapping("/doctor")
 public class DoctorController {
 	
 	@Autowired
 	private DoctorDaoImpl doctorDao;	
-
-//	public ResponseEntity<Doctor> register(@RequestParam("name") String name,
-//										   @RequestParam("email") String email,
-//										   @RequestParam(name="phoneNo",required=false)  String phoneNo,
-//										   @RequestParam("city") String city,
-//										   @RequestParam("password") String password,
-//										   @RequestParam("specialization") String specialization,
-//										   @RequestParam("certificateNo") String certificateNo) {
-//		
+	
+	@Autowired
+	private EmailServiceImpl mailService;
 	
 	
-	
-	
+	// OTP request
+	@PostMapping("/reqOTP")
+	public ResponseEntity<String> requestOtp(@RequestBody Map<String,String> requestBody)
+	{
+		String to=requestBody.get("email");
+		System.out.println("Sending otp to "+to);
+		String otp=mailService.sendOtp(to);
+		System.out.println("otp = "+otp);  // working 
+		
+		return new ResponseEntity<String>(otp,HttpStatus.OK);
+	}
 	
 	
 	@PostMapping("/register")
 	public ResponseEntity<Doctor> register(@RequestBody Doctor doctor) {
-		
+		System.out.println("Storing patient into db");
 		System.out.println(doctor);
 		
+		//One exception may be patient already present with given email
 		doctorDao.store(doctor);
+		 
 		return new ResponseEntity<>(doctor,HttpStatus.OK);
 	}
+	
+	
+	// Doctor login
+	@PostMapping("/login")
+	public ResponseEntity<String> login(@RequestBody Map<String,String> requestBody,
+										HttpServletRequest request) {
+		
+		HttpSession session=request.getSession();
+		if(session.isNew()) {
+			System.out.println("New Session");
+		} else {
+			System.out.println("User session already existed");
+		}
+		
+		System.out.println("Trying to login");
+		System.out.println("login detail : email = "+requestBody.get("email")+
+							"\n               password = "+requestBody.get("password")+"\n");
+		
+		Doctor doctor=doctorDao.extract(requestBody.get("email"));
+		
+		if(doctor==null) {
+			System.out.println("Doctor not exist with email-id "+requestBody.get("email"));
+			return new ResponseEntity<>("Patient not found with email",
+										HttpStatus.NOT_FOUND);
+		} else if(!requestBody.get("password").equals(doctor.getPassword())) {
+			System.out.println("Incorrect password");
+			return new ResponseEntity<>("Incorrect password",	
+										HttpStatus.OK);
+		}
+
+		session.setAttribute("USER_EMAIL",doctor.getEmail());
+		return new ResponseEntity<>("login successful",HttpStatus.OK);
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	@GetMapping("/getbyid/{id}")

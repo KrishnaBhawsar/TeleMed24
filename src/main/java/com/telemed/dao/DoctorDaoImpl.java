@@ -23,63 +23,59 @@ public class DoctorDaoImpl implements DoctorDao{
 	public int store(Doctor doctor) {
 		
 		String storeDoctorQuery="INSERT INTO doctor "
-				+ "(name,email,phone_no,city,certificate_no,rating,specialization,password)"
-				+ "VALUES (?,?,?,?,?,?,?,?)";
-		
+				+ "(name,email,phone_no,city,address,certificate_no,rating,mode_of_consultation,specialization,password)"
+				+ "VALUES (?,?,?,?,?,?,?,?,?,?)";
 		int rowsAffected=jdbcTemplate.update(storeDoctorQuery,
 										doctor.getName(),
 										doctor.getEmail(),
 										doctor.getPhoneNo(),
 										doctor.getCity(),
+										doctor.getAddress(),
 										doctor.getCertificateNo(),
 										doctor.getRating(),
+										doctor.getModeOfConsultation(),
 										doctor.getSpecialization(),
 										doctor.getPassword());
-		
 		return rowsAffected;
+	}
+	
+	
+	// Method to extract doctor by email
+	public Doctor extract(String email) {
+		String extractPatientEmailQuery="SELECT * FROM doctor WHERE email=?";
+		Doctor doctor=jdbcTemplate.queryForObject(extractPatientEmailQuery, doctorRowMapper, email);
+		return doctor;
 	}
 	
 	
 	// Method to extract whole Doctor Object from DB  
 	public Optional<Doctor> extract(int primaryKey) {
-		
 		String extractDoctorQuery="SELECT * FROM doctor WHERE id=?";
-		
 		Doctor doctor=jdbcTemplate.queryForObject(extractDoctorQuery, doctorRowMapper, primaryKey);
 		Optional<Doctor> optionalDoctor=Optional.of(doctor);
-		
 		return optionalDoctor;
 	}
-	
-	
+		
 	
 	// Method to extract whole Doctor by name Object from DB  
 	public List<Doctor> extractByName(String name) {
-		
 		String extractDoctorQueryByName="SELECT * FROM doctor WHERE name=?";
-		
 		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryByName, doctorRowMapper, name);
 		return doctorList;
 	}
-	
-	
+
 	
 	// Method to extract whole Doctor by city Object from DB  
-	public List<Doctor> extractByCity(String city) {
-		
+	public List<Doctor> extractByCity(String city) {	
 		String extractDoctorQueryByName="SELECT * FROM doctor WHERE name=?";
-		
 		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryByName, doctorRowMapper, city);
 		return doctorList;
 	}
 	
 	
-	
 	// Method to extract whole Doctor by specialization Object from DB  
 	public List<Doctor> extractBySpecialization(String specialization) {
-			
-		String extractDoctorQueryBySpecialization="SELECT * FROM doctor WHERE name=?";
-		
+		String extractDoctorQueryBySpecialization="SELECT * FROM doctor WHERE name=?";	
 		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryBySpecialization, doctorRowMapper, specialization);
 		return doctorList;
 	}
