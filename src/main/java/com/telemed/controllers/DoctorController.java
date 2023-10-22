@@ -40,7 +40,7 @@ public class DoctorController {
 	@PostMapping("/register")
 	public ResponseEntity<Doctor> register(@RequestBody Doctor doctor) {
 		
-		System.out.println(doctor);
+		// System.out.println(doctor);
 		
 		doctorDao.store(doctor);
 		return new ResponseEntity<>(doctor,HttpStatus.OK);
@@ -70,6 +70,5 @@ public class DoctorController {
 		} 
 		return new ResponseEntity<>(doctors,HttpStatus.OK);
 	}
-	
 	
 }
