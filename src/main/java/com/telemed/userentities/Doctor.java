@@ -10,6 +10,7 @@ public class Doctor extends User{
 	private int rating;
 	private String specialization;
 	private String address;
+	private String modeOfConsultation;
 	
 	
 	public String getAddress() {
@@ -23,9 +24,7 @@ public class Doctor extends User{
 	}
 	public void setModeOfConsultation(String modeOfConsultation) {
 		this.modeOfConsultation = modeOfConsultation;
-	}
-	private String modeOfConsultation;
-	
+	}	
 	public String getCertificateNo() {
 		return certificateNo;
 	}
@@ -46,10 +45,12 @@ public class Doctor extends User{
 	}
 	
 
+	
 	@Override
 	public String toString() {
 		return "Doctor [certificateNo=" + certificateNo + ", rating=" + rating + ", specialization=" + specialization
-				+ ", id=" + id + ", name=" + name + ", email=" + email + ", phoneNo=" + phoneNo + ", city=" + city
+				+ ", address=" + address + ", modeOfConsultation=" + modeOfConsultation + ", id=" + id + ", name="
+				+ name + ", email=" + email + ", phoneNo=" + phoneNo + ", city=" + city + ", password=" + password
 				+ ", appointments=" + appointments + "]";
 	}
 	public Doctor(String certificateNo, int rating, String specialization) {

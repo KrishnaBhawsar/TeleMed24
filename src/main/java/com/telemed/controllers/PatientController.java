@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.telemed.dao.AppointmentDaoImpl;
 import com.telemed.dao.PatientDaoImpl;
 import com.telemed.emailservices.EmailServiceImpl;
+import com.telemed.medicalhistoryentity.Appointment;
 import com.telemed.userentities.Patient;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +34,9 @@ public class PatientController {
 	
 	@Autowired
 	private EmailServiceImpl mailService;
+	
+	@Autowired
+	private AppointmentDaoImpl appointmentDao;
 	
 	
 	// OTP request
@@ -49,14 +54,14 @@ public class PatientController {
 	
 	// sign-up of patient
 	@PostMapping ("/register")
-	public ResponseEntity<Patient> register(@RequestBody Patient patient,HttpSession session) {
+	public ResponseEntity<Patient> register(@RequestBody Patient patient) {
 		System.out.println("Storing patient into db");
 		System.out.println(patient);
 		
-//		 One exception may be patient already present with given email
-		 patientDao.store(patient);
+		//One exception may be patient already present with given email
+		patientDao.store(patient);
 		 
-		 return new ResponseEntity<>(patient,HttpStatus.OK);
+		return new ResponseEntity<>(patient,HttpStatus.OK);
 		  
 	}
 	
@@ -67,12 +72,12 @@ public class PatientController {
 		
 		HttpSession session=request.getSession();
 		if(session.isNew()) {
-			System.out.println("New Session");
+			System.out.println("Patient New Session");
 		} else {
-			System.out.println("User session already existed");
+			System.out.println("Patient session already existed");
 		}
 		
-		System.out.println("Trying to login");
+		System.out.println("Patient to login");
 		System.out.println("login detail : email = "+requestBody.get("email")+
 							"\n               password = "+requestBody.get("password")+"\n");
 		
@@ -92,6 +97,38 @@ public class PatientController {
 		return new ResponseEntity<>("login successful",HttpStatus.OK);
 	}
 	
+	// View Profile
+	@GetMapping("/view-profile")
+	public ResponseEntity<Patient> viewProfile(HttpServletRequest request) {
+		HttpSession session=request.getSession(false);
+		if(session==null) {
+			return new ResponseEntity<>(null,HttpStatus.OK);
+		}
+		String email=(String) session.getAttribute("USER_EMAIL");
+		Patient patient=patientDao.extract(email);
+		System.out.println("View Profile : " + patient);
+		return new ResponseEntity<>(patient,HttpStatus.OK);
+	}
+	
+	@GetMapping("/medical-history")
+	public ResponseEntity<List<Appointment>> getAppointments (HttpServletRequest request) {
+		HttpSession session=request.getSession(false);
+		Patient patient=patientDao.extract((String)session.getAttribute("USER_EMAIL"));
+		int patientId=patient.getId();
+		List<Appointment> appointments=appointmentDao.extractAll(patientId);
+		return new ResponseEntity<>(appointments,HttpStatus.OK);
+	}
+	
+	// Logout API
+	@GetMapping("/logout")
+	public ResponseEntity<String> logout(HttpServletRequest request) {
+		System.out.println("Patient logout");
+		HttpSession session = request.getSession(false); // Get the current session without creating a new one
+		if (session != null) {
+			session.invalidate(); // Invalidate the user's session
+		}
+		return new ResponseEntity<String>("logout successfull",HttpStatus.OK);
+	}
 	
 	@GetMapping("/getall")
 	public ResponseEntity<List<Patient>> getAll() {

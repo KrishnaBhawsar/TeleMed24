@@ -53,8 +53,7 @@ public class DoctorController {
 		System.out.println(doctor);
 		
 		//One exception may be patient already present with given email
-		doctorDao.store(doctor);
-		 
+		doctorDao.store(doctor); 
 		return new ResponseEntity<>(doctor,HttpStatus.OK);
 	}
 	
@@ -66,14 +65,14 @@ public class DoctorController {
 		
 		HttpSession session=request.getSession();
 		if(session.isNew()) {
-			System.out.println("New Session");
+			System.out.println("Doctor New Session");
 		} else {
-			System.out.println("User session already existed");
+			System.out.println("Doctor session already existed");
 		}
 		
-		System.out.println("Trying to login");
+		System.out.println("Doctor to login");
 		System.out.println("login detail : email = "+requestBody.get("email")+
-							"\n               password = "+requestBody.get("password")+"\n");
+							"\n               password = "+requestBody.get("password"));
 		
 		Doctor doctor=doctorDao.extract(requestBody.get("email"));
 		
