@@ -54,14 +54,14 @@ public class PatientController {
 	
 	// sign-up of patient
 	@PostMapping ("/register")
-	public ResponseEntity<Patient> register(@RequestBody Patient patient) {
+	public ResponseEntity<String> register(@RequestBody Patient patient) {
 		System.out.println("Storing patient into db");
 		System.out.println(patient);
 		
 		//One exception may be patient already present with given email
 		patientDao.store(patient);
 		 
-		return new ResponseEntity<>(patient,HttpStatus.OK);
+		return new ResponseEntity<>("sign-up successfull",HttpStatus.OK);
 		  
 	}
 	
@@ -72,25 +72,20 @@ public class PatientController {
 		
 		HttpSession session=request.getSession();
 		if(session.isNew()) {
-			System.out.println("Patient New Session");
+			System.out.println("\nPatient New Session");
 		} else {
-			System.out.println("Patient session already existed");
+			System.out.println("\nPatient session already existed");
 		}
 		
 		System.out.println("Patient to login");
-		System.out.println("login detail : email = "+requestBody.get("email")+
+		System.out.println("login detail: email = "+requestBody.get("email")+
 							"\n               password = "+requestBody.get("password")+"\n");
 		
 		Patient patient=patientDao.extract(requestBody.get("email"));
 		
-		if(patient==null) {
-			System.out.println("Patient not exist with email-id "+requestBody.get("email"));
-			return new ResponseEntity<>("Patient not found with email",
-										HttpStatus.NOT_FOUND);
-		} else if(!requestBody.get("password").equals(patient.getPassword())) {
+		if(!requestBody.get("password").equals(patient.getPassword())) {
 			System.out.println("Incorrect password");
-			return new ResponseEntity<>("Incorrect password",	
-										HttpStatus.OK);
+			return new ResponseEntity<>("Incorrect password",HttpStatus.OK);
 		}
 
 		session.setAttribute("USER_EMAIL",patient.getEmail());
@@ -101,12 +96,16 @@ public class PatientController {
 	@GetMapping("/view-profile")
 	public ResponseEntity<Patient> viewProfile(HttpServletRequest request) {
 		HttpSession session=request.getSession(false);
+		
 		if(session==null) {
+			System.out.println("\nPatient is not logged-in Session= "+session);
 			return new ResponseEntity<>(null,HttpStatus.OK);
-		}
+		} else	System.out.println("Patient session already existed");
+		
 		String email=(String) session.getAttribute("USER_EMAIL");
 		Patient patient=patientDao.extract(email);
-		System.out.println("View Profile : " + patient);
+		System.out.println("Viewing patient profile: "+email);
+		System.out.println("View Profile: " + patient);
 		return new ResponseEntity<>(patient,HttpStatus.OK);
 	}
 	
@@ -129,6 +128,17 @@ public class PatientController {
 		}
 		return new ResponseEntity<String>("logout successfull",HttpStatus.OK);
 	}
+	
+	
+	// check user exist
+	@PostMapping("/emailexist")
+	public ResponseEntity<String> checkEmailExists(@RequestBody Map<String,String> request) {
+		System.out.println("Checking patient exist in DB : "+request.get("email"));
+		patientDao.extract(request.get("email"));
+		return new ResponseEntity<String>("email exist",HttpStatus.OK);
+	}
+	
+	
 	
 	@GetMapping("/getall")
 	public ResponseEntity<List<Patient>> getAll() {

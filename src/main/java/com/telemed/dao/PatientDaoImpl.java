@@ -5,10 +5,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.telemed.dao.rowmapper.PatientRowMapper;
+import com.telemed.exceptions.UserNotFoundException;
+import com.telemed.exceptions.UserWithEmailAlreadyExistException;
 import com.telemed.userentities.Patient;
 
 
@@ -21,20 +25,24 @@ public class PatientDaoImpl implements PatientDao {
 	private PatientRowMapper patientRowMapper=PatientRowMapper.getRowMapper();
 	
 	// Method to store patient into DB
-	public int store(Patient patient) {
+	public int store(Patient patient){
 		
 		String storePatientQuery="INSERT INTO patient "
 				+ "(name,email,phone_no,dob,city,password)"
 				+ "VALUES (?,?,?,?,?,?)";
-		
-		int rowsAffected=jdbcTemplate.update(storePatientQuery,
-										patient.getName(),
-										patient.getEmail(),
-										patient.getPhoneNo(),
-										patient.getDob(),
-										patient.getCity(),
-										patient.getPassword()
-										);
+		int rowsAffected=0;
+		try {
+			rowsAffected=jdbcTemplate.update(storePatientQuery,
+					patient.getName(),
+					patient.getEmail(),
+					patient.getPhoneNo(),
+					patient.getDob(),
+					patient.getCity(),
+					patient.getPassword()
+					);			
+		} catch (DataIntegrityViolationException e) {
+			throw new UserWithEmailAlreadyExistException();
+		}
 		System.out.println(rowsAffected);
 		return rowsAffected;
 	}
@@ -85,10 +93,14 @@ public class PatientDaoImpl implements PatientDao {
 	public Patient extract(String email) {
 		String extractPatientEmailQuery="SELECT * FROM patient WHERE email=?";
 		
-		Patient patient=jdbcTemplate.queryForObject(extractPatientEmailQuery, patientRowMapper, email);
+		Patient patient=null;
+		try {
+			patient=jdbcTemplate.queryForObject(extractPatientEmailQuery, patientRowMapper, email);
+		} catch (EmptyResultDataAccessException e) {
+			throw new UserNotFoundException(email);
+		}
 		return patient;
 	}
-	
 	
 	
 	

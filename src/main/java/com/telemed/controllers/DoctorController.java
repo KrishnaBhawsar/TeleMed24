@@ -76,21 +76,37 @@ public class DoctorController {
 		
 		Doctor doctor=doctorDao.extract(requestBody.get("email"));
 		
-		if(doctor==null) {
-			System.out.println("Doctor not exist with email-id "+requestBody.get("email"));
-			return new ResponseEntity<>("Patient not found with email",
-										HttpStatus.NOT_FOUND);
-		} else if(!requestBody.get("password").equals(doctor.getPassword())) {
+		if(!requestBody.get("password").equals(doctor.getPassword())) {
 			System.out.println("Incorrect password");
-			return new ResponseEntity<>("Incorrect password",	
-										HttpStatus.OK);
+			return new ResponseEntity<>("Incorrect password",HttpStatus.OK);
 		}
 
 		session.setAttribute("USER_EMAIL",doctor.getEmail());
 		return new ResponseEntity<>("login successful",HttpStatus.OK);
 	}
 	
+	@GetMapping("/view-profile")
+	public ResponseEntity<Doctor> viewProfile(HttpServletRequest request) {
+		HttpSession session=request.getSession(false);
+		
+		if(session==null) {
+			System.out.println("\nPatient is not logged-in Session= "+session);
+			return new ResponseEntity<>(null,HttpStatus.OK);
+		} else	System.out.println("Patient session already existed");
+		
+		String email=(String) session.getAttribute("USER_EMAIL");
+		Doctor doctor=doctorDao.extract(email);
+		System.out.println("Viewing doctor profile: "+email);
+		System.out.println("View Profile: " + doctor);
+		return new ResponseEntity<>(doctor,HttpStatus.OK);
+	}
 	
+	@PostMapping("/emailexist")
+	public ResponseEntity<String> checkEmailExists(@RequestBody Map<String,String> request) {
+		System.out.println("Checking patient exist in DB : "+request.get("email"));
+		doctorDao.extract(request.get("email"));
+		return new ResponseEntity<String>("email exist",HttpStatus.OK);
+	}	
 	
 	
 	

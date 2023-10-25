@@ -4,10 +4,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.telemed.dao.rowmapper.DoctorRowMapper;
+import com.telemed.exceptions.UserNotFoundException;
+import com.telemed.exceptions.UserWithEmailAlreadyExistException;
 import com.telemed.userentities.Doctor;
 
 
@@ -25,17 +29,23 @@ public class DoctorDaoImpl implements DoctorDao{
 		String storeDoctorQuery="INSERT INTO doctor "
 				+ "(name,email,phone_no,city,address,certificate_no,rating,mode_of_consultation,specialization,password)"
 				+ "VALUES (?,?,?,?,?,?,?,?,?,?)";
-		int rowsAffected=jdbcTemplate.update(storeDoctorQuery,
-										doctor.getName(),
-										doctor.getEmail(),
-										doctor.getPhoneNo(),
-										doctor.getCity(),
-										doctor.getAddress(),
-										doctor.getCertificateNo(),
-										doctor.getRating(),
-										doctor.getModeOfConsultation(),
-										doctor.getSpecialization(),
-										doctor.getPassword());
+		int rowsAffected=0;
+		
+		try {
+			rowsAffected=jdbcTemplate.update(storeDoctorQuery,
+											doctor.getName(),
+											doctor.getEmail(),
+											doctor.getPhoneNo(),
+											doctor.getCity(),
+											doctor.getAddress(),
+											doctor.getCertificateNo(),
+											doctor.getRating(),
+											doctor.getModeOfConsultation(),
+											doctor.getSpecialization(),
+											doctor.getPassword());
+		} catch (DataIntegrityViolationException e) {
+			throw new UserWithEmailAlreadyExistException();
+		}
 		return rowsAffected;
 	}
 	
@@ -43,7 +53,12 @@ public class DoctorDaoImpl implements DoctorDao{
 	// Method to extract doctor by email
 	public Doctor extract(String email) {
 		String extractPatientEmailQuery="SELECT * FROM doctor WHERE email=?";
-		Doctor doctor=jdbcTemplate.queryForObject(extractPatientEmailQuery, doctorRowMapper, email);
+		Doctor doctor=null;
+		try {
+			doctor=jdbcTemplate.queryForObject(extractPatientEmailQuery, doctorRowMapper, email);
+		} catch (EmptyResultDataAccessException e) {
+			throw new UserNotFoundException(email);
+		}
 		return doctor;
 	}
 	
