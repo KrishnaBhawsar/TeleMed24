@@ -51,11 +51,11 @@ public class AppointmentTimeSlotDaoImpl {
 	public List<AppointmentTimeSlot> extractAvailable(int doctorKey) {
 		String extractAvailableTimeSlots="""
 					SELECT * FROM appointment_slot where doctor_id=? AND 
-					current_patient < total_patient
+					current_patient < total_patient AND end>CURTIME()
 				""";
 		List<AppointmentTimeSlot> slots=null;
 		try {			
-			slots=jdbcTemplate.query(extractAvailableTimeSlots,appointmentTimeSlotMapper);
+			slots=jdbcTemplate.query(extractAvailableTimeSlots,appointmentTimeSlotMapper,doctorKey);
 		} catch (EmptyResultDataAccessException e) {
 			throw new NoSlotsAvailable();
 		}

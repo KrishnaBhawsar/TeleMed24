@@ -92,8 +92,8 @@ public class DoctorController {
 	
 	// Booking slot
 	@PutMapping("/bookslot")
-	public ResponseEntity<String> bookSlot(@RequestBody Map<String,String> request) {
-		int slotId=Integer.parseInt((String)request.get("slotId"));
+	public ResponseEntity<String> bookSlot(@RequestBody Map<String,String> requestBody,HttpServletRequest request) {
+		int slotId=Integer.parseInt((String)requestBody.get("slotId"));
 		timeSlotDao.updateSlot(slotId);
 		
 		return new ResponseEntity<String>("slot booked",HttpStatus.OK);
