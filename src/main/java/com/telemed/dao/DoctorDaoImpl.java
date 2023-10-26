@@ -49,6 +49,17 @@ public class DoctorDaoImpl implements DoctorDao{
 		return rowsAffected;
 	}
 	
+	// Method to extract all doctors
+	public List<Doctor> extractAll() {
+		String extractAllDoctorQuery="SELECT * FROM doctor";
+		List<Doctor> doctors=null;
+		try {
+			doctors=jdbcTemplate.query(extractAllDoctorQuery, doctorRowMapper);
+		} catch (EmptyResultDataAccessException e) {
+			throw new UserNotFoundException("empty set");
+		}
+		return doctors;
+	}
 	
 	// Method to extract doctor by email
 	public Doctor extract(String email) {
@@ -74,7 +85,8 @@ public class DoctorDaoImpl implements DoctorDao{
 	
 	// Method to extract whole Doctor by name Object from DB  
 	public List<Doctor> extractByName(String name) {
-		String extractDoctorQueryByName="SELECT * FROM doctor WHERE name=?";
+		String extractDoctorQueryByName="SELECT * FROM doctor WHERE name LIKE ? AND"
+										+ "(mode_of_consultation='OFFLINE' OR mode_of_consultation='BOTH')";
 		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryByName, doctorRowMapper, name);
 		return doctorList;
 	}
@@ -82,7 +94,8 @@ public class DoctorDaoImpl implements DoctorDao{
 	
 	// Method to extract whole Doctor by city Object from DB  
 	public List<Doctor> extractByCity(String city) {	
-		String extractDoctorQueryByName="SELECT * FROM doctor WHERE name=?";
+		String extractDoctorQueryByName="SELECT * FROM doctor WHERE city=? AND "
+										+ "(mode_of_consultation='OFFLINE' OR mode_of_consultation='BOTH')";
 		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryByName, doctorRowMapper, city);
 		return doctorList;
 	}
@@ -90,11 +103,11 @@ public class DoctorDaoImpl implements DoctorDao{
 	
 	// Method to extract whole Doctor by specialization Object from DB  
 	public List<Doctor> extractBySpecialization(String specialization) {
-		String extractDoctorQueryBySpecialization="SELECT * FROM doctor WHERE name=?";	
+		String extractDoctorQueryBySpecialization="SELECT * FROM doctor WHERE specialization=? "
+													+ "AND (mode_of_consultation='OFFLINE' OR mode_of_consultation='BOTH')";	
 		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryBySpecialization, doctorRowMapper, specialization);
 		return doctorList;
 	}
-	
 	
 	
 	

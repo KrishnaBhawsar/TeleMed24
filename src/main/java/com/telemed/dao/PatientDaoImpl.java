@@ -68,7 +68,6 @@ public class PatientDaoImpl implements PatientDao {
 	}
 	
 	
-	
 	// Method to extract whole patient by name Object from DB  
 	public List<Patient> extractByName(String name) {
 		
@@ -80,7 +79,7 @@ public class PatientDaoImpl implements PatientDao {
 	
 	
 	
-	// Method to extract whole Doctor by city Object from DB  
+	// Method to extract whole Patient by city Object from DB  
 	public List<Patient> extractByCity(String city) {
 		
 		String extractPatientQueryByName="SELECT * FROM patient WHERE name=?";
@@ -88,6 +87,8 @@ public class PatientDaoImpl implements PatientDao {
 		List<Patient> doctorList=jdbcTemplate.query(extractPatientQueryByName,patientRowMapper, city);
 		return doctorList;
 	}
+	
+	
 	
 
 	public Patient extract(String email) {

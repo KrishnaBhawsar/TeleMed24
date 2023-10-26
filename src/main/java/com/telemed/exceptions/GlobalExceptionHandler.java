@@ -17,4 +17,9 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> UserWithEmailAlreadyExistException(UserWithEmailAlreadyExistException exception) {
 		return new ResponseEntity<String>("user already exist",HttpStatus.OK);
 	}
+	
+	@ExceptionHandler(NoSlotsAvailable.class) 
+	public ResponseEntity<String> noTimeSlotAvailableForAppointment (NoSlotsAvailable exception) {
+		return new ResponseEntity<String>("no slots available",HttpStatus.OK);
+	}
 }

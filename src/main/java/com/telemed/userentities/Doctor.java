@@ -61,6 +61,7 @@ public class Doctor extends User{
 	}
 	public Doctor() {
 		super();
+		this.modeOfConsultation="BOTH";
 	}
 	public Doctor(int id, String name, String email, String phoneNo, String city, Appointment appointment) {
 		super(id, name, email, phoneNo, city, appointment);

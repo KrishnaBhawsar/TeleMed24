@@ -4,5 +4,6 @@ package com.telemed.exceptions;
 public class UserWithEmailAlreadyExistException extends RuntimeException {
 	public UserWithEmailAlreadyExistException() {
 		super();
+		System.out.println("\nuser already exist");
 	}
 }
