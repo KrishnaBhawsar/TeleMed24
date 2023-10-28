@@ -1,5 +1,6 @@
 package com.telemed.controllers;
 
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -148,10 +149,21 @@ public class DoctorController {
 	}
 	
 	@PutMapping("/update") 
-	public ResponseEntity<String> update(@RequestBody Doctor doctor) {
-		System.err.println("\ndoctor update");
+	public ResponseEntity<String> update(@RequestBody Map<String,String> request,HttpServletRequest requestSession) throws ParseException  {
+		System.err.println("\n in patient update");
+		String name=request.get("name");
+		String phoneNo=request.get("phoneNo");
+		String city=request.get("city");
+		String address=request.get("address");
+		String email=(String) requestSession.getSession().getAttribute("USER_EMAIL");
+		
+		Doctor doctor=doctorDao.extract(email);
+		doctor.setName(name);
+		doctor.setPhoneNo(phoneNo);
+		doctor.setAddress(address);
+		doctor.setCity(city);
 		doctorDao.update(doctor);
-		return new ResponseEntity<String>("doctor update",HttpStatus.OK);
+		return new ResponseEntity<String>("patient update",HttpStatus.OK);
 	}
 	
 	@GetMapping("/getappointments")

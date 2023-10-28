@@ -1,5 +1,8 @@
 package com.telemed.controllers;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -97,8 +100,19 @@ public class PatientController {
 	}
 	
 	@PutMapping("/update")
-	public ResponseEntity<String> update(@RequestBody Patient patient) {
-		System.err.println("/nin patient update");
+	public ResponseEntity<String> update(@RequestBody Map<String,String> request,HttpServletRequest requestSession) throws ParseException  {
+		System.err.println("\n in patient update");
+		String name=(String) request.get("name");
+		String phoneNo=(String) request.get("phoneNo");
+		String city=(String) request.get("city");
+		Date dob=new SimpleDateFormat("yyyy-mm-dd").parse(request.get("dob"));
+		String email=(String) requestSession.getSession().getAttribute("USER_EMAIL");
+		
+		Patient patient=patientDao.extract(email);
+		patient.setName(name);
+		patient.setPhoneNo(phoneNo);
+		patient.setDob(dob);
+		patient.setCity(city);
 		patientDao.update(patient);
 		return new ResponseEntity<String>("patient update",HttpStatus.OK);
 	}

@@ -55,11 +55,18 @@ public class PatientDaoImpl implements PatientDao {
 	// Method to update patient
 	@Override
 	public void update(Patient patient) {
-		String deletePatientQuery="""
-				DELETE FROM patient WHERE email=?
-				""";
-		jdbcTemplate.update(deletePatientQuery,patient.getEmail());
-		this.store(patient);
+		String updatePatientQuery="""
+				UPDATE patient
+				SET name=?,
+				city=?,
+				phone_no=?,
+				dob=? WHERE email=?
+ 				""";
+		jdbcTemplate.update(updatePatientQuery,patient.getName(),
+											   patient.getCity(),
+											   patient.getPhoneNo(),
+											   patient.getDob(),
+											   patient.getEmail());
 	}
 	
 	// Method to extract all patients

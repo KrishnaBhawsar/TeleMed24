@@ -55,11 +55,18 @@ public class DoctorDaoImpl implements DoctorDao{
 	// Method to update doctor
 	@Override
 	public void update(Doctor doctor) {
-		String deleteQuery="""
-				DELETE FROM doctor WHERE email=?
-				""";
-		jdbcTemplate.update(deleteQuery,doctor.getEmail());
-		this.store(doctor);
+		String updatePatientQuery="""
+				UPDATE doctor
+				SET name=?,
+				city=?,
+				phone_no=?,
+				address=? WHERE email=?
+ 				""";
+		jdbcTemplate.update(updatePatientQuery,doctor.getName(),
+											   doctor.getCity(),
+											   doctor.getPhoneNo(),
+											   doctor.getAddress(),
+											   doctor.getEmail());
 	}
 	
 	
