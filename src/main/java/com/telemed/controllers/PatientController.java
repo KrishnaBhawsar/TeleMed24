@@ -2,6 +2,7 @@ package com.telemed.controllers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,10 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.telemed.appointmententity.Appointment;
+import com.telemed.appointmententity.ViewAppointment;
 import com.telemed.dao.AppointmentDaoImpl;
+import com.telemed.dao.DoctorDaoImpl;
 import com.telemed.dao.PatientDaoImpl;
 import com.telemed.emailservices.EmailServiceImpl;
 import com.telemed.exceptions.UserWithEmailAlreadyExistException;
+import com.telemed.userentities.Doctor;
 import com.telemed.userentities.Patient;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +38,9 @@ public class PatientController {
 	
 	@Autowired
 	private PatientDaoImpl patientDao;
+	
+	@Autowired 
+	private DoctorDaoImpl doctorDao;
 	
 	@Autowired
 	private EmailServiceImpl mailService;
@@ -120,14 +127,33 @@ public class PatientController {
 	
 	// To extract all appointments of patient
 	@GetMapping("/getappointments")
-	public ResponseEntity<List<Appointment>> getAppointments(HttpServletRequest request) {
+	public ResponseEntity<List<ViewAppointment>> getAppointments(HttpServletRequest request) {
 		List<Appointment> appointments=null;
+		List<ViewAppointment> viewAppointments=new ArrayList<>();
+		
 		HttpSession session=request.getSession(false);
+		
+		if(session==null) {
+			System.out.println("\nPatient is not logged-in Session= "+session);
+			return new ResponseEntity<>(null,HttpStatus.OK);
+		} else	System.out.println("Patient session already existed");
 		String patientEmail=(String) session.getAttribute("USER_EMAIL");
+		int patientKey=patientDao.extract(patientEmail).getId();
 		
-		int patientId=patientDao.extract(patientEmail).getId();
-		appointments=appointmentDao.extractPatientAppointments(patientId);
+		appointments=appointmentDao.extractPatientAppointments(patientKey);
+		for(Appointment appointment:appointments) {
+			Doctor doctor=doctorDao.extract(appointment.getDoctorId());
+			Patient patient=patientDao.extract(appointment.getPatientId());
+			
+			ViewAppointment viewAppointment=new ViewAppointment(doctor.getName(),
+																patient.getName(),
+																appointment.getMode(),
+																appointment.getPrescription(),
+																doctor.getSpecialization(),
+																appointment.getDate());
+			viewAppointments.add(viewAppointment);
+		}
 		
-		return new ResponseEntity<List<Appointment>>(appointments,HttpStatus.OK);
+		return new ResponseEntity<List<ViewAppointment>>(viewAppointments,HttpStatus.OK);
 	}
 }

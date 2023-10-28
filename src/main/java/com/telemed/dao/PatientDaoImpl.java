@@ -2,7 +2,6 @@ package com.telemed.dao;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -80,14 +79,13 @@ public class PatientDaoImpl implements PatientDao {
 	
 	// Method to extract whole Patient Object from DB  
 	@Override
-	public Optional<Patient> extract(int primaryKey) {
+	public Patient extract(int primaryKey) {
 		
 		String extractPatientQuery="SELECT * FROM patient WHERE id=?";
 		
 		Patient patient=jdbcTemplate.queryForObject(extractPatientQuery, patientRowMapper, primaryKey);
-		Optional<Patient> optionalPatient=Optional.of(patient);
 		
-		return optionalPatient;
+		return patient;
 	}
 	
 	

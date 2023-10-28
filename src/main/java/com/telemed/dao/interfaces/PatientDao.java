@@ -2,7 +2,6 @@ package com.telemed.dao.interfaces;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.Optional;
 
 import com.telemed.userentities.Patient;
 
@@ -10,7 +9,7 @@ public interface PatientDao extends UserDao{
 	public int store(Patient patient);
 	void update(Patient patient);
 	public List<Patient> extractAll();  
-	public Optional<Patient> extract(int primaryKey);  
+	public Patient extract(int primaryKey);  
 	public List<Patient> extractByName(String name);  
 	public List<Patient> extractByCity(String city);
 	public Patient extract(String email);
