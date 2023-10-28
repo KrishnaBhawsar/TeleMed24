@@ -55,6 +55,7 @@ public class LoginController {
 		}
 
 		session.setAttribute("USER_EMAIL",requestBody.get("email"));
+		session.setAttribute("USER_MODE", requestBody.get("user"));
 		System.out.println(responseString);
 		return new ResponseEntity<>(responseString,HttpStatus.OK);
 	}

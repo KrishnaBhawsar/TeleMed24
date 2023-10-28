@@ -52,6 +52,17 @@ public class DoctorDaoImpl implements DoctorDao{
 		return rowsAffected;
 	}
 	
+	// Method to update doctor
+	@Override
+	public void update(Doctor doctor) {
+		String deleteQuery="""
+				DELETE FROM doctor WHERE email=?
+				""";
+		jdbcTemplate.update(deleteQuery,doctor.getEmail());
+		this.store(doctor);
+	}
+	
+	
 	// Method to extract all doctors
 	@Override
 	public List<Doctor> extractAll() {

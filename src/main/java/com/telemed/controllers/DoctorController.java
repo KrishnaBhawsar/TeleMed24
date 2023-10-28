@@ -147,6 +147,35 @@ public class DoctorController {
 		return new ResponseEntity<String>("slot booked",HttpStatus.OK);
 	}
 	
+	@PutMapping("/update") 
+	public ResponseEntity<String> update(@RequestBody Doctor doctor) {
+		System.err.println("\ndoctor update");
+		doctorDao.update(doctor);
+		return new ResponseEntity<String>("doctor update",HttpStatus.OK);
+	}
+	
+	@GetMapping("/getappointments")
+	public ResponseEntity<List<Appointment>> getAppointments(HttpServletRequest request) {
+		List<Appointment> appointments=null;
+		HttpSession session=request.getSession(false);
+		String doctorEmail=(String) session.getAttribute("USER_EMAIL");
+		
+		int DoctorId=patientDao.extract(doctorEmail).getId();
+		appointments=appointmentDao.extractPatientAppointments(DoctorId);
+		
+		return new ResponseEntity<List<Appointment>>(appointments,HttpStatus.OK);
+	}
+	
+	@GetMapping("/logout")
+	public ResponseEntity<String> logout(HttpServletRequest request) {
+		System.out.println("\nDoctor logout");
+		HttpSession session=request.getSession(false);
+		if (session != null) {
+			session.invalidate(); // Invalidate the user's session
+		}
+		return new ResponseEntity<>("user logout",HttpStatus.OK);
+	}
+	
 	@PostMapping("/reqOTP")
 	public ResponseEntity<String> requestOtp(@RequestBody Map<String,String> requestBody)
 	{

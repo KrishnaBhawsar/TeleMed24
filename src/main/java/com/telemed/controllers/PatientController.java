@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,7 +38,6 @@ public class PatientController {
 	@Autowired
 	private AppointmentDaoImpl appointmentDao;
 	
-	
 	// View Profile
 	@GetMapping("/view-profile")
 	public ResponseEntity<Patient> viewProfile(HttpServletRequest request) {
@@ -63,7 +63,7 @@ public class PatientController {
 		if (session != null) {
 			session.invalidate(); // Invalidate the user's session
 		}
-		return new ResponseEntity<String>("logout successfull",HttpStatus.OK);
+		return new ResponseEntity<String>("user logout",HttpStatus.OK);
 	}
 	
 	@PostMapping("/reqOTP")
@@ -76,6 +76,7 @@ public class PatientController {
 		
 		return new ResponseEntity<String>(otp,HttpStatus.OK);
 	}
+	
 	@PostMapping("/emailexist")
 	public ResponseEntity<String> checkEmailExists(@RequestBody Map<String,String> request) {
 		System.out.println("Checking patient exist in DB : "+request.get("email"));
@@ -83,6 +84,7 @@ public class PatientController {
 		System.out.println("dfghdfgdfg");
 		throw new UserWithEmailAlreadyExistException();
 	}
+	
 	@PostMapping ("/register")
 	public ResponseEntity<String> register(@RequestBody Patient patient) {
 		System.out.println("Storing patient into db");
@@ -94,9 +96,17 @@ public class PatientController {
 		return new ResponseEntity<>("sign-up successfull",HttpStatus.OK);
 	}
 	
+	@PutMapping("/update")
+	public ResponseEntity<String> update(@RequestBody Patient patient) {
+		System.err.println("/nin patient update");
+		patientDao.update(patient);
+		return new ResponseEntity<String>("patient update",HttpStatus.OK);
+	}
+	
+	
 	// To extract all appointments of patient
 	@GetMapping("/getappointments")
-	public List<Appointment> getAppointments(HttpServletRequest request) {
+	public ResponseEntity<List<Appointment>> getAppointments(HttpServletRequest request) {
 		List<Appointment> appointments=null;
 		HttpSession session=request.getSession(false);
 		String patientEmail=(String) session.getAttribute("USER_EMAIL");
@@ -104,6 +114,6 @@ public class PatientController {
 		int patientId=patientDao.extract(patientEmail).getId();
 		appointments=appointmentDao.extractPatientAppointments(patientId);
 		
-		return appointments;
+		return new ResponseEntity<List<Appointment>>(appointments,HttpStatus.OK);
 	}
 }
