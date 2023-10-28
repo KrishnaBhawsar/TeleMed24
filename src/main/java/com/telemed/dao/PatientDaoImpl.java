@@ -10,6 +10,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.telemed.dao.interfaces.PatientDao;
 import com.telemed.dao.rowmapper.PatientRowMapper;
 import com.telemed.exceptions.UserNotFoundException;
 import com.telemed.exceptions.UserWithEmailAlreadyExistException;
@@ -25,11 +26,15 @@ public class PatientDaoImpl implements PatientDao {
 	private PatientRowMapper patientRowMapper=PatientRowMapper.getRowMapper();
 	
 	// Method to store patient into DB
+	@Override
 	public int store(Patient patient){
 		
-		String storePatientQuery="INSERT INTO patient "
-				+ "(name,email,phone_no,dob,city,password)"
-				+ "VALUES (?,?,?,?,?,?)";
+		String storePatientQuery="""
+				INSERT INTO patient 
+				(name,email,phone_no,dob,city,password)
+				VALUES (?,?,?,?,?,?)
+				""";
+				
 		int rowsAffected=0;
 		try {
 			rowsAffected=jdbcTemplate.update(storePatientQuery,
@@ -49,6 +54,7 @@ public class PatientDaoImpl implements PatientDao {
 	
 	
 	// Method to extract all patients
+	@Override
 	public List<Patient> extractAll() {
 		String extractAllPatientsQuery="SELECT * FROM patient";
 		
@@ -57,6 +63,7 @@ public class PatientDaoImpl implements PatientDao {
 	}
 	
 	// Method to extract whole Patient Object from DB  
+	@Override
 	public Optional<Patient> extract(int primaryKey) {
 		
 		String extractPatientQuery="SELECT * FROM patient WHERE id=?";
@@ -69,6 +76,7 @@ public class PatientDaoImpl implements PatientDao {
 	
 	
 	// Method to extract whole patient by name Object from DB  
+	@Override
 	public List<Patient> extractByName(String name) {
 		
 		String storePatientQuery="SELECT * FROM patient WHERE name=?";
@@ -79,7 +87,8 @@ public class PatientDaoImpl implements PatientDao {
 	
 	
 	
-	// Method to extract whole Patient by city Object from DB  
+	// Method to extract whole Patient by city Object from DB 
+	@Override
 	public List<Patient> extractByCity(String city) {
 		
 		String extractPatientQueryByName="SELECT * FROM patient WHERE name=?";
@@ -89,8 +98,7 @@ public class PatientDaoImpl implements PatientDao {
 	}
 	
 	
-	
-
+	@Override
 	public Patient extract(String email) {
 		String extractPatientEmailQuery="SELECT * FROM patient WHERE email=?";
 		
@@ -102,6 +110,8 @@ public class PatientDaoImpl implements PatientDao {
 		}
 		return patient;
 	}
+	
+	
 	
 	
 	

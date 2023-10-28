@@ -1,7 +1,6 @@
 package com.telemed.dao;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.telemed.dao.interfaces.DoctorDao;
 import com.telemed.dao.rowmapper.DoctorRowMapper;
 import com.telemed.exceptions.UserNotFoundException;
 import com.telemed.exceptions.UserWithEmailAlreadyExistException;
@@ -24,11 +24,14 @@ public class DoctorDaoImpl implements DoctorDao{
 	private DoctorRowMapper doctorRowMapper=DoctorRowMapper.getRowMapper();
 	
 	// Method to store doctor into DB
+	@Override
 	public int store(Doctor doctor) {
 		
-		String storeDoctorQuery="INSERT INTO doctor "
-				+ "(name,email,phone_no,city,address,certificate_no,rating,mode_of_consultation,specialization,password)"
-				+ "VALUES (?,?,?,?,?,?,?,?,?,?)";
+		String storeDoctorQuery="""
+				INSERT INTO doctor
+				(name,email,phone_no,city,address,certificate_no,rating,mode_of_consultation,specialization,password)
+				VALUES (?,?,?,?,?,?,?,?,?,?)
+				"""; 
 		int rowsAffected=0;
 		
 		try {
@@ -50,6 +53,7 @@ public class DoctorDaoImpl implements DoctorDao{
 	}
 	
 	// Method to extract all doctors
+	@Override
 	public List<Doctor> extractAll() {
 		String extractAllDoctorQuery="SELECT * FROM doctor";
 		List<Doctor> doctors=null;
@@ -62,6 +66,7 @@ public class DoctorDaoImpl implements DoctorDao{
 	}
 	
 	// Method to extract doctor by email
+	@Override
 	public Doctor extract(String email) {
 		String extractPatientEmailQuery="SELECT * FROM doctor WHERE email=?";
 		Doctor doctor=null;
@@ -75,36 +80,46 @@ public class DoctorDaoImpl implements DoctorDao{
 	
 	
 	// Method to extract whole Doctor Object from DB  
-	public Optional<Doctor> extract(int primaryKey) {
+	@Override
+	public Doctor extract(int primaryKey) {
 		String extractDoctorQuery="SELECT * FROM doctor WHERE id=?";
 		Doctor doctor=jdbcTemplate.queryForObject(extractDoctorQuery, doctorRowMapper, primaryKey);
-		Optional<Doctor> optionalDoctor=Optional.of(doctor);
-		return optionalDoctor;
+		return doctor;
 	}
 		
 	
-	// Method to extract whole Doctor by name Object from DB  
+	// Method to extract whole Doctor by name Object from DB
+	@Override
 	public List<Doctor> extractByName(String name) {
-		String extractDoctorQueryByName="SELECT * FROM doctor WHERE name LIKE ? AND"
-										+ "(mode_of_consultation='OFFLINE' OR mode_of_consultation='BOTH')";
+		String extractDoctorQueryByName="""
+				SELECT * FROM doctor WHERE name LIKE ? AND
+				(mode_of_consultation='OFFLINE' OR mode_of_consultation='BOTH')
+				""";
 		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryByName, doctorRowMapper, name);
 		return doctorList;
 	}
 
 	
 	// Method to extract whole Doctor by city Object from DB  
+	@Override
 	public List<Doctor> extractByCity(String city) {	
-		String extractDoctorQueryByName="SELECT * FROM doctor WHERE city=? AND "
-										+ "(mode_of_consultation='OFFLINE' OR mode_of_consultation='BOTH')";
+		String extractDoctorQueryByName="""
+				SELECT * FROM doctor WHERE city=? AND 
+				(mode_of_consultation='OFFLINE' OR mode_of_consultation='BOTH')
+				""";
 		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryByName, doctorRowMapper, city);
 		return doctorList;
 	}
 	
 	
 	// Method to extract whole Doctor by specialization Object from DB  
+	@Override
 	public List<Doctor> extractBySpecialization(String specialization) {
-		String extractDoctorQueryBySpecialization="SELECT * FROM doctor WHERE specialization=? "
-													+ "AND (mode_of_consultation='OFFLINE' OR mode_of_consultation='BOTH')";	
+		String extractDoctorQueryBySpecialization="""
+				SELECT * FROM doctor WHERE specialization=? 
+				AND (mode_of_consultation='OFFLINE' OR mode_of_consultation='BOTH')	
+				""";
+				
 		List<Doctor> doctorList=jdbcTemplate.query(extractDoctorQueryBySpecialization, doctorRowMapper, specialization);
 		return doctorList;
 	}
@@ -116,7 +131,6 @@ public class DoctorDaoImpl implements DoctorDao{
 	
 	
 	// Methods to extract individual attributes of Doctor
-	
 	@Override
 	public String extractName(int primaryKey) {
 		String name=null;

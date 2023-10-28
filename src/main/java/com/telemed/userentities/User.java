@@ -3,7 +3,7 @@ package com.telemed.userentities;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.telemed.medicalhistoryentity.Appointment;
+import com.telemed.appointmententity.Appointment;
 
 public abstract class User {
 	public int id;

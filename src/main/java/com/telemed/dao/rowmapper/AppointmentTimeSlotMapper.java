@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import com.telemed.medicalhistoryentity.AppointmentTimeSlot;
+import com.telemed.appointmententity.AppointmentTimeSlot;
 
 public class AppointmentTimeSlotMapper implements RowMapper<AppointmentTimeSlot> {
 	

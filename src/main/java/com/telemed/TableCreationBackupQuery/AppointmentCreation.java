@@ -17,11 +17,9 @@ public class AppointmentCreation {
 							+ "FOREIGN KEY(patient_id) REFERENCES patient(id),"
 							+ "FOREIGN KEY(doctor_id) REFERENCES doctor(id) )";
 
-	private String alterQuery=" ALTER TABLE patient AUTO_INCREMENT=2000 ";
 	
 	public void createAppointmentTable() {
 		jdbcTemplate.execute(appointmentCreationQuery);
-		jdbcTemplate.execute(alterQuery);
 	}
 
 }

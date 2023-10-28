@@ -1,4 +1,4 @@
-package com.telemed.medicalhistoryentity;
+package com.telemed.appointmententity;
 
 import java.sql.Time;
 

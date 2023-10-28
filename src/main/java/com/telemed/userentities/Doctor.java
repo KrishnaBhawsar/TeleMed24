@@ -2,7 +2,7 @@ package com.telemed.userentities;
 
 import org.springframework.stereotype.Component;
 
-import com.telemed.medicalhistoryentity.Appointment;
+import com.telemed.appointmententity.Appointment;
 
 @Component
 public class Doctor extends User{

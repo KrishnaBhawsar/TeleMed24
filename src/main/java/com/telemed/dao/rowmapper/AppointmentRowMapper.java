@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import com.telemed.medicalhistoryentity.Appointment;
+import com.telemed.appointmententity.Appointment;
 
 public class AppointmentRowMapper implements RowMapper<Appointment>{
 	
@@ -18,7 +18,9 @@ public class AppointmentRowMapper implements RowMapper<Appointment>{
 		appointment.setId(rs.getInt("id"));
 		appointment.setPatientId(rs.getInt("patient_id"));
 		appointment.setDoctorId(rs.getInt("doctor_id"));
-		appointment.setDate(rs.getDate("appointment_date"));
+		appointment.setDate(rs.getString("appointment_date"));
+		appointment.setPrescription(rs.getString("prescription"));
+		appointment.setMode(rs.getString("appointment_mode"));
 		return appointment;
 	}
 	

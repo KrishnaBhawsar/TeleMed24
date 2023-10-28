@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.telemed.appointmententity.Appointment;
 import com.telemed.dao.AppointmentDaoImpl;
 import com.telemed.dao.PatientDaoImpl;
 import com.telemed.emailservices.EmailServiceImpl;
 import com.telemed.exceptions.UserWithEmailAlreadyExistException;
-import com.telemed.medicalhistoryentity.Appointment;
 import com.telemed.userentities.Patient;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,17 +53,6 @@ public class PatientController {
 		System.out.println("Viewing patient profile: "+email);
 		System.out.println("View Profile: " + patient);
 		return new ResponseEntity<>(patient,HttpStatus.OK);
-	}
-	
-	
-	
-	@GetMapping("/medical-history")
-	public ResponseEntity<List<Appointment>> getAppointments (HttpServletRequest request) {
-		HttpSession session=request.getSession(false);
-		Patient patient=patientDao.extract((String)session.getAttribute("USER_EMAIL"));
-		int patientId=patient.getId();
-		List<Appointment> appointments=appointmentDao.extractAll(patientId);
-		return new ResponseEntity<>(appointments,HttpStatus.OK);
 	}
 	
 	// Logout API
@@ -103,6 +92,18 @@ public class PatientController {
 		patientDao.store(patient);
 		
 		return new ResponseEntity<>("sign-up successfull",HttpStatus.OK);
+	}
+	
+	// To extract all appointments of patient
+	@GetMapping("/getappointments")
+	public List<Appointment> getAppointments(HttpServletRequest request) {
+		List<Appointment> appointments=null;
+		HttpSession session=request.getSession(false);
+		String patientEmail=(String) session.getAttribute("USER_EMAIL");
 		
+		int patientId=patientDao.extract(patientEmail).getId();
+		appointments=appointmentDao.extractPatientAppointments(patientId);
+		
+		return appointments;
 	}
 }

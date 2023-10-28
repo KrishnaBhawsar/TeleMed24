@@ -1,5 +1,7 @@
 package com.telemed.controllers;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -15,12 +17,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.telemed.appointmententity.Appointment;
+import com.telemed.appointmententity.AppointmentTimeSlot;
+import com.telemed.dao.AppointmentDaoImpl;
 import com.telemed.dao.AppointmentTimeSlotDaoImpl;
 import com.telemed.dao.DoctorDaoImpl;
+import com.telemed.dao.PatientDaoImpl;
 import com.telemed.emailservices.EmailServiceImpl;
 import com.telemed.exceptions.UserWithEmailAlreadyExistException;
-import com.telemed.medicalhistoryentity.AppointmentTimeSlot;
 import com.telemed.userentities.Doctor;
+import com.telemed.userentities.Patient;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -32,6 +38,12 @@ public class DoctorController {
 	
 	@Autowired
 	private DoctorDaoImpl doctorDao;	
+	
+	@Autowired
+	private PatientDaoImpl patientDao;
+	
+	@Autowired
+	private AppointmentDaoImpl appointmentDao;
 	
 	@Autowired
 	private EmailServiceImpl mailService;
@@ -92,10 +104,46 @@ public class DoctorController {
 	
 	// Booking slot
 	@PutMapping("/bookslot")
-	public ResponseEntity<String> bookSlot(@RequestBody Map<String,String> requestBody,HttpServletRequest request) {
-		int slotId=Integer.parseInt((String)requestBody.get("slotId"));
-		timeSlotDao.updateSlot(slotId);
+	public ResponseEntity<String> bookSlot(@RequestParam("doctorId") String doctorIdString,
+            							   @RequestParam("slotId") String slotIdString,
+										   HttpServletRequest request) {
+		int doctorId=Integer.parseInt(doctorIdString);
+		int slotId=Integer.parseInt(slotIdString);
 		
+		System.out.println("Booking slot of doctor:"+doctorId);
+		
+		HttpSession session=request.getSession(false);
+		
+		String patientEmail=(String) session.getAttribute("USER_EMAIL");
+		
+		System.out.println("Indide slot book");
+		
+		AppointmentTimeSlot slot=timeSlotDao.extractById(slotId);
+		Doctor doctor=doctorDao.extract(doctorId);
+		Patient patient=patientDao.extract(patientEmail);
+		
+		String doctorName=doctor.getName();
+		String patientName=patient.getName();
+		String clinicAddress=doctor.getAddress();
+		String appointmentTime=slot.getStartTime().toString();
+		
+		LocalDate currentDate = LocalDate.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String appointmentDate = currentDate.format(formatter);
+        
+        Appointment appointment=new Appointment();
+        appointment.setPatientId(patient.getId());
+        appointment.setDoctorId(doctorId);
+        appointment.setDate(appointmentDate);
+        appointment.setMode("OFFLINE");
+        appointmentDao.store(appointment);
+        
+        patient.setAppointments(appointment);
+        doctor.setAppointments(appointment);
+		
+		timeSlotDao.updateSlot(slotId);
+		mailService.sendAppointmentConfirmationMail(patientEmail,patientName,doctorName,
+													clinicAddress,appointmentDate,appointmentTime);
 		return new ResponseEntity<String>("slot booked",HttpStatus.OK);
 	}
 	
