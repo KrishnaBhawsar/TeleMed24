@@ -14,7 +14,9 @@ import com.telemed.dao.PatientDaoImpl;
 import com.telemed.userentities.Doctor;
 import com.telemed.userentities.Patient;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
@@ -29,7 +31,8 @@ public class LoginController {
 	
 	@PostMapping("/login")
 	public ResponseEntity<String> login(@RequestBody Map<String,String> requestBody,
-										HttpServletRequest request) {
+										HttpServletRequest request,
+										HttpServletResponse response) {
 		
 		HttpSession session=request.getSession();
 		if(session.isNew()) {
@@ -56,6 +59,10 @@ public class LoginController {
 
 		session.setAttribute("USER_EMAIL",requestBody.get("email"));
 		session.setAttribute("USER_MODE", requestBody.get("user"));
+		
+		Cookie cookie=new Cookie("USER_MODE", requestBody.get("user"));
+		response.addCookie(cookie);
+		
 		System.out.println(responseString);
 		return new ResponseEntity<>(responseString,HttpStatus.OK);
 	}
