@@ -12,8 +12,7 @@ public interface PatientDao extends UserDao{
 	public Patient extract(int primaryKey);  
 	public List<Patient> extractByName(String name);  
 	public List<Patient> extractByCity(String city);
-	public Patient extract(String email);
-	
+	public Patient extract(String email);	
 	
 	// Optional methods
 	public String extractName(int primaryKey);

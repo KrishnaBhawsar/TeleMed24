@@ -230,5 +230,15 @@ public class DoctorDaoImpl implements DoctorDao{
 		return specialization;
 	}
 
+	@Override
+	public List<Doctor> extractOnineDoctor(String specialization) {
+		String extractOnlineDoctoQuery="""
+				SELECT * FROM doctor where mode_of_consultation=?
+			""";
+		List<Doctor> doctors=jdbcTemplate.query(extractOnlineDoctoQuery,doctorRowMapper);
+		return doctors;
+	}
+	
+
 
 }

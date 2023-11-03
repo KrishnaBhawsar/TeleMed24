@@ -28,7 +28,6 @@ public class LoginController {
 	@Autowired
 	private DoctorDaoImpl doctorDao;
 	
-	
 	@PostMapping("/login")
 	public ResponseEntity<String> login(@RequestBody Map<String,String> requestBody,
 										HttpServletRequest request,

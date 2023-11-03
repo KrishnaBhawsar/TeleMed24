@@ -214,4 +214,11 @@ public class DoctorController {
 		System.out.println("dfgegwerg");
 		throw new UserWithEmailAlreadyExistException();
 	}
+	
+	@GetMapping("/getonlinedoctor")
+	public ResponseEntity<List<Doctor>> getOnlineDoctors(@RequestParam("specialization") String specialization) {
+		List<Doctor> doctors=null;
+		doctors=doctorDao.extractOnineDoctor(specialization);
+		return new ResponseEntity<List<Doctor>>(doctors,HttpStatus.OK);
+	}
 }
